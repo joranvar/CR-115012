@@ -7,13 +7,13 @@
     AND OrderTrackDate BETWEEN '12/7/2015' AND '12/8/2015'
   GROUP BY OrderTrackDate, OrderNum)
       , TempPayment AS
-(SELECT OrderNum
+(SELECT OrderTrackDate
+      , OrderNum
       , Coupons = SUM(CASE WHEN PaymentCoupon = - 1 THEN PaymentAmount ELSE 0 END)
       , Promo = SUM(CASE WHEN PaymentPromo = - 1 THEN PaymentAmount ELSE 0 END)
-      , OrderTrackDate
    FROM dbo.Payment
   WHERE OrderTrackDate BETWEEN '12/7/2015' AND '12/8/2015'
-  GROUP BY OrderNum, OrderTrackDate)
+  GROUP BY OrderTrackDate, OrderNum)
  SELECT Hour = DATEPART(hour, OrderCloseTime)
       , OrderType
       , GuestCount = SUM(OrderGuests)

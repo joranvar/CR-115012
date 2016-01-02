@@ -35,3 +35,31 @@
 You can even make it a bit more fancy and align the ~=~ signs, which
 could improve readability if the expressions are much alike, but would
 be harder to maintain.
+
+** Order columns consistently
+
+   Not just in the ~GROUP BY~, but also in the ~SELECT~ list.  This
+   especially makes sense when you join on them: list the primary
+   key(s) in a consistent order.  This may be a minor pick, but it
+   helps when reviewing; when you see them at the top, you won't miss
+   them.  For now, I'm guessing that ~OrderTrackDate~ is a combined
+   key with ~OrderNum~ and that neither of them is unique by itself.
+
+#+BEGIN_SRC sql
+     WITH TempGiftCard AS
+  (SELECT OrderTrackDate
+        , OrderNum
+        , GiftCardsSold = SUM(ItemPrice)
+     FROM dbo.OrderItems
+    WHERE ItemName = 'GIFT CARD'
+      AND OrderTrackDate BETWEEN '12/7/2015' AND '12/8/2015'
+    GROUP BY OrderTrackDate, OrderNum)
+        , TempPayment AS
+  (SELECT OrderTrackDate
+        , OrderNum
+        , Coupons = SUM(CASE WHEN PaymentCoupon = - 1 THEN PaymentAmount ELSE 0 END)
+        , Promo = SUM(CASE WHEN PaymentPromo = - 1 THEN PaymentAmount ELSE 0 END)
+     FROM dbo.Payment
+    WHERE OrderTrackDate BETWEEN '12/7/2015' AND '12/8/2015'
+    GROUP BY OrderTrackDate, OrderNum)
+#+END_SRC
