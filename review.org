@@ -63,3 +63,22 @@ be harder to maintain.
     WHERE OrderTrackDate BETWEEN '12/7/2015' AND '12/8/2015'
     GROUP BY OrderTrackDate, OrderNum)
 #+END_SRC
+
+** [[https://xkcd.com/1179/][Use the ISO 8601 date format]]
+
+   At first when I read the query, I thought you accidentally queried
+   data for a whole month, but I guess I am used to the DD/MM/YYYY
+   format.  You might want to check whether the date format settings
+   of the database are correct, so that SQL interprets the strings
+   correctly.
+
+   If that setting may vary, you can always fall back on the ISO
+   notation, which will be interpreted correctly.
+
+   If, for whatever reason, the ~OrderTrackDate~ column is
+   a char(10) instead of a date, you will certainly have queried a
+   whole month.
+
+#+BEGIN_SRC sql
+     AND OrderTrackDate BETWEEN '2015-12-07' AND '2015-12-08'
+#+END_SRC

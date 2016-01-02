@@ -4,7 +4,7 @@
       , GiftCardsSold = SUM(ItemPrice)
    FROM dbo.OrderItems
   WHERE ItemName = 'GIFT CARD'
-    AND OrderTrackDate BETWEEN '12/7/2015' AND '12/8/2015'
+    AND OrderTrackDate BETWEEN '2015-12-07' AND '2015-12-08'
   GROUP BY OrderTrackDate, OrderNum)
       , TempPayment AS
 (SELECT OrderTrackDate
@@ -12,7 +12,7 @@
       , Coupons = SUM(CASE WHEN PaymentCoupon = - 1 THEN PaymentAmount ELSE 0 END)
       , Promo = SUM(CASE WHEN PaymentPromo = - 1 THEN PaymentAmount ELSE 0 END)
    FROM dbo.Payment
-  WHERE OrderTrackDate BETWEEN '12/7/2015' AND '12/8/2015'
+  WHERE OrderTrackDate BETWEEN '2015-12-07' AND '2015-12-08'
   GROUP BY OrderTrackDate, OrderNum)
  SELECT Hour = DATEPART(hour, OrderCloseTime)
       , OrderType
@@ -33,7 +33,7 @@
    FROM dbo.OrderInfo
    LEFT JOIN TempPayment ON OrderInfo.OrderNum = TempPayment.OrderNum AND OrderInfo.OrderTrackDate = TempPayment.OrderTrackDate
    LEFT JOIN TempGiftCard ON OrderInfo.OrderNum = TempGiftCard.OrderNum AND OrderInfo.OrderTrackDate = TempGiftCard.OrderTrackDate
-  WHERE OrderInfo.OrderTrackDate BETWEEN '12/7/2015' AND '12/8/2015' AND OrderType IS NOT NULL
+  WHERE OrderInfo.OrderTrackDate BETWEEN '2015-12-07' AND '2015-12-08' AND OrderType IS NOT NULL
   GROUP BY DATEPART(hour, OrderCloseTime), OrderType
   ORDER BY DATEPART(hour, OrderCloseTime), OrderType
  OPTION (RECOMPILE);
