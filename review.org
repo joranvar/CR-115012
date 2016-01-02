@@ -75,13 +75,15 @@ could improve readability if the expressions are much alike
    If that setting may vary, you can always fall back on the ISO
    notation, which will be interpreted correctly.
 
-   If, for whatever reason, the ~OrderTrackDate~ column is
-   a char(10) instead of a date, you will certainly have queried a
-   whole month.
-
 #+BEGIN_SRC sql
      AND OrderTrackDate BETWEEN '2015-12-07' AND '2015-12-08'
 #+END_SRC
+
+   If, for whatever reason, the ~OrderTrackDate~ column is
+   a char(10) instead of a date, you will certainly have queried a
+   whole month.  In that case, you would probably need to do something
+   with ~convert~.  And as that does not index well, you might need to
+   ~SELECT~ the result of that ~convert~ into another table, first.
 
 ** Use variables as constants or parameters
 
