@@ -50,7 +50,7 @@ be harder to maintain.
   (SELECT OrderTrackDate
         , OrderNum
         , GiftCardsSold = SUM(ItemPrice)
-     FROM dbo.OrderItems
+     FROM RMArchive.dbo.OrderItems
     WHERE ItemName = 'GIFT CARD'
       AND OrderTrackDate BETWEEN '12/7/2015' AND '12/8/2015'
     GROUP BY OrderTrackDate, OrderNum)
@@ -59,7 +59,7 @@ be harder to maintain.
         , OrderNum
         , Coupons = SUM(CASE WHEN PaymentCoupon = - 1 THEN PaymentAmount ELSE 0 END)
         , Promo = SUM(CASE WHEN PaymentPromo = - 1 THEN PaymentAmount ELSE 0 END)
-     FROM dbo.Payment
+     FROM RMArchive.dbo.Payment
     WHERE OrderTrackDate BETWEEN '12/7/2015' AND '12/8/2015'
     GROUP BY OrderTrackDate, OrderNum)
 #+END_SRC
@@ -114,7 +114,7 @@ be harder to maintain.
        , OrderNum
        , GiftCardsSold = SUM(ItemPrice)
     INTO #TempGiftCard
-    FROM dbo.OrderItems
+    FROM RMArchive.dbo.OrderItems
   -- ...
 #+END_SRC
 
