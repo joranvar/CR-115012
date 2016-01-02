@@ -1,3 +1,6 @@
+DECLARE @startDate date = '2015-12-07';
+DECLARE @endDate date = '2015-12-08';
+
 IF OBJECT_ID(N'tempdb..#TempGiftCard') IS NOT NULL DROP TABLE #TempGiftCard;
 SELECT OrderTrackDate
      , OrderNum
@@ -5,7 +8,7 @@ SELECT OrderTrackDate
   INTO #TempGiftCard
   FROM dbo.OrderItems
  WHERE ItemName = 'GIFT CARD'
-   AND OrderTrackDate BETWEEN '2015-12-07' AND '2015-12-08'
+   AND OrderTrackDate BETWEEN @startDate AND @endDate
  GROUP BY OrderTrackDate, OrderNum;
 
 IF OBJECT_ID(N'tempdb..#TempPayment') IS NOT NULL DROP TABLE #TempPayment;
@@ -15,7 +18,7 @@ SELECT OrderTrackDate
      , Promo = SUM(CASE WHEN PaymentPromo = - 1 THEN PaymentAmount ELSE 0 END)
   INTO #TempPayment
   FROM dbo.Payment
- WHERE OrderTrackDate BETWEEN '2015-12-07' AND '2015-12-08'
+ WHERE OrderTrackDate BETWEEN @startDate AND @endDate
  GROUP BY OrderTrackDate, OrderNum;
 
 SELECT Hour = DATEPART(hour, OrderCloseTime)
@@ -37,7 +40,7 @@ SELECT Hour = DATEPART(hour, OrderCloseTime)
   FROM dbo.OrderInfo
   LEFT JOIN #TempPayment ON OrderInfo.OrderNum = #TempPayment.OrderNum AND OrderInfo.OrderTrackDate = #TempPayment.OrderTrackDate
   LEFT JOIN #TempGiftCard ON OrderInfo.OrderNum = #TempGiftCard.OrderNum AND OrderInfo.OrderTrackDate = #TempGiftCard.OrderTrackDate
- WHERE OrderInfo.OrderTrackDate BETWEEN '2015-12-07' AND '2015-12-08' AND OrderType IS NOT NULL
+ WHERE OrderInfo.OrderTrackDate BETWEEN @startDate AND @endDate AND OrderType IS NOT NULL
  GROUP BY DATEPART(hour, OrderCloseTime), OrderType
  ORDER BY DATEPART(hour, OrderCloseTime), OrderType
 OPTION (RECOMPILE);

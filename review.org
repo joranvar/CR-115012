@@ -83,6 +83,21 @@ be harder to maintain.
      AND OrderTrackDate BETWEEN '2015-12-07' AND '2015-12-08'
 #+END_SRC
 
+** Use variables as constants or parameters
+
+   Both dates are specified three times.  If you declare two variables
+   at the top, you need to change them only in one place.  You could
+   also more easily use them as parameters if you go and implement the
+   query as a stored procedure or as a script you call from another
+   client (from another program).
+
+#+BEGIN_SRC sql
+  DECLARE @startDate date = '2015-12-07';
+  DECLARE @endDate date = '2015-12-08';
+  -- ...
+     AND OrderTrackDate BETWEEN @startDate AND @endDate
+#+END_SRC
+
 * CTEs are not per definition more efficient
 
   See also [[http://stackoverflow.com/a/26205087/1866347][this excellent answer]].  Syntactically, it looks so much
