@@ -82,3 +82,26 @@ be harder to maintain.
 #+BEGIN_SRC sql
      AND OrderTrackDate BETWEEN '2015-12-07' AND '2015-12-08'
 #+END_SRC
+
+* CTEs are not per definition more efficient
+
+  See also [[http://stackoverflow.com/a/26205087/1866347][this excellent answer]].  Syntactically, it looks so much
+  nicer to write a CTE instead of a temp table (which also needs
+  cleanup), but they are quite different to the SQL Server that has to
+  execute them.
+
+  In this case, it would probably help to rewrite both of the CTEs to
+  temp tables first, then join on them in the final query.
+
+#+BEGIN_SRC sql
+  IF OBJECT_ID(N'tempdb..#TempGiftCard') IS NOT NULL DROP TABLE #TempGiftCard;
+  SELECT OrderTrackDate
+       , OrderNum
+       , GiftCardsSold = SUM(ItemPrice)
+    INTO #TempGiftCard
+    FROM dbo.OrderItems
+  -- ...
+#+END_SRC
+
+  I cannot test this without table definitions, but I would not be
+  surprised if this helped performance.
