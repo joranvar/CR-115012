@@ -33,8 +33,8 @@
 #+END_SRC
 
 You can even make it a bit more fancy and align the ~=~ signs, which
-could improve readability if the expressions are much alike, but would
-be harder to maintain.
+could improve readability if the expressions are much alike
+(differences stand out more clearly), but would be harder to maintain.
 
 ** Order columns consistently
 
@@ -58,7 +58,7 @@ be harder to maintain.
   (SELECT OrderTrackDate
         , OrderNum
         , Coupons = SUM(CASE WHEN PaymentCoupon = - 1 THEN PaymentAmount ELSE 0 END)
-        , Promo = SUM(CASE WHEN PaymentPromo = - 1 THEN PaymentAmount ELSE 0 END)
+        , Promo   = SUM(CASE WHEN PaymentPromo  = - 1 THEN PaymentAmount ELSE 0 END)
      FROM RMArchive.dbo.Payment
     WHERE OrderTrackDate BETWEEN '12/7/2015' AND '12/8/2015'
     GROUP BY OrderTrackDate, OrderNum)
@@ -67,7 +67,7 @@ be harder to maintain.
 ** [[https://xkcd.com/1179/][Use the ISO 8601 date format]]
 
    At first when I read the query, I thought you accidentally queried
-   data for a whole month, but I guess I am used to the DD/MM/YYYY
+   data for a whole month, but I guess I am used to the DD-MM-YYYY
    format.  You might want to check whether the date format settings
    of the database are correct, so that SQL interprets the strings
    correctly.
@@ -89,7 +89,7 @@ be harder to maintain.
    at the top, you need to change them only in one place.  You could
    also more easily use them as parameters if you go and implement the
    query as a stored procedure or as a script you call from another
-   client (from another program).
+   client (a client application you might write or maintain later).
 
 #+BEGIN_SRC sql
   DECLARE @startDate date = '2015-12-07';
