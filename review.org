@@ -1,0 +1,37 @@
+#+OPTIONS: toc:nil ^:{}
+
+* Style
+
+  First, I like the compact style of the CTEs, and putting the closing
+  parentheses on the same line. I would say, though, that I find the
+  select statements a bit hard to read.  Especially the main one.
+
+** Use prefix aliases for columns
+
+   This is not standard SQL, but t-sql can do this: prefix aliases.
+   In general, when writing long expressions, it gets harder to read
+   the query and to find what you are looking for.  So:
+
+#+BEGIN_SRC sql
+  SELECT DATEPART(hour, OrderCloseTime) AS Hour,
+         OrderType,
+         SUM(OrderGuests) AS GuestCount,
+         ROUND(CASE WHEN SUM(OrderGuests) = 0 THEN 0 ELSE SUM(OrderSubTotal) / SUM(OrderGuests) END, 2) AS AvgPerGuest,
+         SUM(OrderSubTotal) AS Subtotal,
+         ISNULL(SUM(Coupons), 0) * - 1 AS Coupons,
+#+END_SRC
+
+   can be more clear when you write it as
+
+#+BEGIN_SRC sql
+   SELECT Hour = DATEPART(hour, OrderCloseTime)
+        , OrderType
+        , GuestCount = SUM(OrderGuests)
+        , AvgPerGuest = ROUND(CASE WHEN SUM(OrderGuests) = 0 THEN 0 ELSE SUM(OrderSubTotal) / SUM(OrderGuests) END, 2)
+        , Subtotal = SUM(OrderSubTotal)
+        , Coupons = ISNULL(SUM(Coupons), 0) * - 1
+#+END_SRC
+
+You can even make it a bit more fancy and align the ~=~ signs, which
+could improve readability if the expressions are much alike, but would
+be harder to maintain.
