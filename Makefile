@@ -1,23 +1,32 @@
-SQLSTART ?= cd ~/git/vagrant-boxes && vagrant up
-SQSH_FLAGS ?= -S localhost:1433 -U sa -P vagrant -G 7.0
-TESTDIR  ?= test/
+.PHONY: default
+default: all
+
+SQL_startServer ?= cd ~/git/vagrant-boxes && vagrant up 2>&1 >/dev/null
+SQL_sqshFlags   ?= -S localhost:1433 -U sa -P vagrant -G 7.0 -mcsv
+SQL_dbDir       ?= db
+include Makefiles/SQL.mk
+TEST_testDir    ?= test
+include Makefiles/Test.mk
+
+vpath %.sql src
+
+DB_NAME = cr115012
+
+DATABASE  = $(call SQL_mkDatabaseTarget,$(DB_NAME))
+QUERYSET  = $(call SQL_mkScriptSetTarget,$(DB_NAME),queryset)
+QUERYTEST = $(call TEST_mkCompareTarget,$(QUERYSET))
+
+$(DATABASE): create_$(DB_NAME).sql
+$(QUERYSET): query.sql
 
 .PHONY: all
 all: db test
 
 .PHONY: db
-db: bin/cr115012.db
+db: $(DATABASE)
 
 .PHONY: test
-test: test/cr115012/test.sql.success
+test: $(QUERYTEST)
 
-.PHONY: expect
-expect: test/cr115012/test_expect.out
-
-vpath %.sql src test
-
-include Makefiles/SQL.mk
-
-# Define sut
-test/cr115012/test.sql.success: src/query.sql
-test/cr115012/test_expect.out: src/query.sql
+.PHONY: expected
+expected: $(call TEST_mkGoldTarget,$(QUERYTEST))
